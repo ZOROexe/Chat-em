@@ -26,10 +26,26 @@ export const useMsgStore = create((set, get) => ({
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
       set({ messages: res.data });
+      await axiosInstance.put(`/messages/mark-as-read/${userId}`);
+
+      set((state) => ({
+        users: state.users.map((user) =>
+          user._id === userId ? { ...user, hasUnreadMessages: false } : user
+        ),
+      }));
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
       set({ isGettingMessages: false });
+    }
+  },
+  markMessageAsRead: async (userId) => {
+    try {
+      const { getUsers } = get();
+      await axiosInstance.put(`/messages/mark-as-read/${userId}`);
+      await getUsers();
+    } catch (error) {
+      console.error("Error in marking messages as read in frontend", error);
     }
   },
   sendMessages: async (messageData) => {
@@ -45,23 +61,44 @@ export const useMsgStore = create((set, get) => ({
       toast.error(error.response.data.message);
     }
   },
-
   connectToMessages: () => {
     const { selectedUser } = get();
     if (!selectedUser) return;
     const socket = useAuth.getState().socket;
-    socket.on("newMessage", (newMessage) => {
-      if (newMessage.senderId !== selectedUser._id) return;
+    const currUser = useAuth.getState().authUser;
 
-      set({
-        messages: [...get().messages, newMessage],
-      });
+    socket.on("newMessage", (newMessage) => {
+      if (
+        (newMessage.senderId === selectedUser._id &&
+          newMessage.receiverId === currUser._id) ||
+        (newMessage.senderId === currUser._id &&
+          newMessage.receiverId === senderId)
+      ) {
+        set({ messages: [...messages, newMessage] });
+      }
+
+      set((state) => ({
+        users: state.users.map((user) =>
+          user._id === newMessage.senderId
+            ? { ...user, hasUnreadMessages: true }
+            : user
+        ),
+      }));
+    });
+
+    socket.on("messagesRead", ({ userId }) => {
+      set((state) => ({
+        users: state.users.map((user) =>
+          user._id === userId ? { ...user, hasUnreadMessages: false } : user
+        ),
+      }));
     });
   },
 
   disconnectFromMessages: () => {
     const socket = useAuth.getState().socket;
     socket.off("newMessage");
+    socket.off("messagesRead");
   },
 
   setSelectedUser: (user) => set({ selectedUser: user }),

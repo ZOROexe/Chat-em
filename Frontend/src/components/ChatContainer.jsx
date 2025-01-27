@@ -10,8 +10,7 @@ export const ChatContainer = () => {
     messages,
     getMessages,
     selectedUser,
-    setSelectedUser,
-    onlineUsers,
+    markMessageAsRead,
     isGettingMessages,
     connectToMessages,
     disconnectFromMessages,
@@ -21,16 +20,23 @@ export const ChatContainer = () => {
 
   useEffect(() => {
     getMessages(selectedUser._id);
+    markMessageAsRead(selectedUser._id);
     connectToMessages();
 
     return () => disconnectFromMessages();
-  }, [selectedUser, getMessages, connectToMessages, disconnectFromMessages]);
+  }, [
+    selectedUser,
+    getMessages,
+    connectToMessages,
+    disconnectFromMessages,
+    markMessageAsRead,
+  ]);
 
   useEffect(() => {
-    if (messageRef.current && messages) {
+    if (messageRef.current) {
       messageRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, [messages, selectedUser]);
 
   if (isGettingMessages) return <MsgLoading />;
 
@@ -38,13 +44,14 @@ export const ChatContainer = () => {
     <div className="flex-1 flex flex-col overflow-auto">
       <ChatHeader />
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
+        {messages.map((message, index) => (
           <div
             key={message._id}
             className={`chat ${
               message.senderId === authUser.user._id ? "chat-end" : "chat-start"
             }`}
-            ref={messageRef}
+            /*  ref={messageRef} */
+            ref={index === messages.length - 1 ? messageRef : null}
           >
             {" "}
             <div className="chat-image avatar">
@@ -76,6 +83,7 @@ export const ChatContainer = () => {
             </div>
           </div>
         ))}
+        <div ref={messageRef}></div>
       </div>
       <SendMsg />
     </div>

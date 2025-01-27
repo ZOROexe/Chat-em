@@ -5,13 +5,39 @@ import { getSocketId, io } from "../lib/socket.js";
 export const getUsersForSideBar = async (req, res) => {
   try {
     const userId = req.user._id;
-    /* const users = await User.find({ _id: { $ne: userId } }).select("-password"); */
-
     const users = await User.find({
       _id: { $ne: userId },
     }).select("-password");
 
-    res.status(200).json(users);
+    /* const usersWithUnreadFlag = await Promise.all(
+      users.map(async (user) => {
+        const unreadMsgCount = await Message.countDocuments({
+          senderId: user._id,
+          recieverId: userId,
+          isRead: false,
+        });
+        return {
+          ...user.toObject(),
+          hasUnreadMessages: unreadMsgCount > 0,
+        };
+      })
+    ); */
+
+    const usersWithUnreadFlag = await Promise.all(
+      users.map(async (user) => {
+        const unreadMsgCount = await Message.countDocuments({
+          senderId: user._id,
+          recieverId: userId,
+          isRead: false,
+        });
+        return {
+          ...user.toObject(),
+          hasUnreadMessages: unreadMsgCount > 0,
+        };
+      })
+    );
+
+    res.status(200).json(usersWithUnreadFlag);
   } catch (error) {
     console.log("Error getUsersforSideBAr profile", error);
     return res.status(500).json({ message: "Internal Server Error" });
@@ -63,5 +89,25 @@ export const sendMessage = async (req, res) => {
   } catch (error) {
     console.log("Error sendMessages", error);
     return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const markMsgAsRead = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const currentUserId = req.user._id;
+
+    await Message.updateMany(
+      { senderId: userId, recieverId: currentUserId, isRead: false },
+      { isRead: true }
+    );
+
+    const senderSocketId = getSocketId(userId);
+    io.to(senderSocketId).emit("messagesRead", { userId: currentUserId });
+
+    res.status(200).json({ message: "Messages marked as read" });
+  } catch (error) {
+    console.log("Error in markes as read");
+    res.status(500).json({ message: "Internal server errror" });
   }
 };

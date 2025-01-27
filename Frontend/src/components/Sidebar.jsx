@@ -5,21 +5,29 @@ import { useAuth } from "../store/authStore";
 import { useEffect, useState } from "react";
 
 export const Sidebar = () => {
-  const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } =
-    useMsgStore();
+  const {
+    getUsers,
+    users,
+    selectedUser,
+    setSelectedUser,
+    isUsersLoading,
+    connectToMessages,
+    disconnectFromMessages,
+  } = useMsgStore();
   const { onlineUsers } = useAuth();
   const [showOnlineUsers, setShowOnlineUsers] = useState(false);
 
   useEffect(() => {
     getUsers();
-  }, [getUsers]);
+    connectToMessages();
+    return () => disconnectFromMessages();
+  }, [getUsers, connectToMessages, disconnectFromMessages]);
 
   const filteredUsers = showOnlineUsers
     ? users.filter((user) => onlineUsers.includes(user._id))
     : users;
 
   if (isUsersLoading) return <SidebarSkeleton />;
-
   return (
     <aside className="h-full w-20 lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200">
       <div className="border-b border-base-300 w-full p-5">
@@ -79,6 +87,11 @@ export const Sidebar = () => {
                 </div>
               }
             </div>
+            {user.hasUnreadMessages && (
+              <div className="hidden lg:block relative">
+                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-20 size-3 bg-[#991C97] rounded-full" />
+              </div>
+            )}
           </button>
         ))}
       </div>
