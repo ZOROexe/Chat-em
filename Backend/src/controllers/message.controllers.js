@@ -9,20 +9,6 @@ export const getUsersForSideBar = async (req, res) => {
       _id: { $ne: userId },
     }).select("-password");
 
-    /* const usersWithUnreadFlag = await Promise.all(
-      users.map(async (user) => {
-        const unreadMsgCount = await Message.countDocuments({
-          senderId: user._id,
-          recieverId: userId,
-          isRead: false,
-        });
-        return {
-          ...user.toObject(),
-          hasUnreadMessages: unreadMsgCount > 0,
-        };
-      })
-    ); */
-
     const usersWithUnreadFlag = await Promise.all(
       users.map(async (user) => {
         const unreadMsgCount = await Message.countDocuments({

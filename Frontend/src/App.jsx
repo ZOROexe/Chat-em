@@ -24,8 +24,6 @@ const App = () => {
       </div>
     );
   }
-  console.log(onlineUsers);
-  console.log({ authUser });
 
   return (
     <div data-theme={theme}>

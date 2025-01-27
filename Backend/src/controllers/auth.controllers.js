@@ -67,7 +67,6 @@ export const logout = (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
-  console.log(req.body);
   try {
     const { profilePic } = req.body;
     if (!profilePic)

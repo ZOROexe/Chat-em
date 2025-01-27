@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { MessageSquare, MoonIcon, SunIcon, User, LogOut } from "lucide-react";
+import {
+  BotMessageSquare,
+  MoonIcon,
+  SunIcon,
+  User,
+  LogOut,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../store/authStore";
 import { useTheme } from "../store/themeStore";
@@ -25,9 +31,9 @@ const Navbar = () => {
               className="flex items-center gap-2.5 hover:opacity-80 transition-all"
             >
               <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                <MessageSquare className="size-5 text-primary" />
+                <BotMessageSquare className="size-5 text-primary" />
               </div>
-              <h1>Chatty</h1>
+              <h1>Chat'em</h1>
             </Link>
           </div>
 

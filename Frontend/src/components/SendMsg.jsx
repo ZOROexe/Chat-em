@@ -35,7 +35,7 @@ export const SendMsg = () => {
       setImg(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
-      console.log("error in handlde send msg", error);
+      console.log("error in handle send msg", error);
       toast.error("Cannot send the message");
     }
   };

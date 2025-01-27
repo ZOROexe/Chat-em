@@ -3,6 +3,8 @@ import { axiosInstance } from "../lib/axiosConfig";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
+const URL =
+  import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
 export const useAuth = create((set, get) => ({
   authUser: null,
   isSigningUp: false,
@@ -15,7 +17,6 @@ export const useAuth = create((set, get) => ({
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check");
-      console.log(res.data);
       set({ authUser: res.data });
       get().connectSocket();
     } catch (error) {
@@ -68,7 +69,6 @@ export const useAuth = create((set, get) => ({
   updateProfile: async (data) => {
     set({ isUpdatingProfile: true });
     try {
-      console.log(data);
       const res = await axiosInstance.put("/auth/update-profile", data);
       set({ authUser: res.data });
       toast.success("Profile updated successfully");
@@ -82,7 +82,7 @@ export const useAuth = create((set, get) => ({
   connectSocket: () => {
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;
-    const socket = io("http://localhost:5001", {
+    const socket = io(URL, {
       query: {
         userId: authUser.user._id,
       },
@@ -94,7 +94,6 @@ export const useAuth = create((set, get) => ({
     });
 
     socket.connect();
-    console.log("Online Users", get().onlineUsers);
   },
 
   disconnectSocket: () => {
