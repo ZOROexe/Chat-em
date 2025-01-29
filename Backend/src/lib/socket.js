@@ -5,7 +5,8 @@ import express from "express";
 const app = express();
 
 const server = http.createServer(app);
-const URL = process.env.MODE === "development" ? "http://localhost:5173" : "/";
+const URL =
+  process.env.NODE_ENV === "development" ? "http://localhost:5173" : "/";
 const io = new Server(server, {
   cors: {
     origin: [URL],
