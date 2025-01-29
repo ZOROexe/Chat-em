@@ -11,8 +11,9 @@ const server = http.createServer(app);
     : "https://chat-em.onrender.com"; */
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: ["https://chat-em.onrender.com"],
     methods: ["GET", "POST", "PUT"],
+    credentials: true,
   },
 });
 
