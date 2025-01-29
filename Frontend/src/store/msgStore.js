@@ -68,14 +68,16 @@ export const useMsgStore = create((set, get) => ({
     const currUser = useAuth.getState().authUser;
 
     socket.on("newMessage", (newMessage) => {
-      if (
-        (newMessage.senderId === selectedUser._id &&
-          newMessage.receiverId === currUser._id) ||
-        (newMessage.senderId === currUser._id &&
-          newMessage.receiverId === senderId)
-      ) {
-        set({ messages: [...messages, newMessage] });
-      }
+      set((state) => {
+        if (
+          (newMessage.senderId === selectedUser._id &&
+            newMessage.receiverId === currUser._id) ||
+          (newMessage.senderId === currUser._id &&
+            newMessage.receiverId === senderId)
+        ) {
+          return set({ messages: [...state.messages, newMessage] });
+        }
+      })
 
       set((state) => ({
         users: state.users.map((user) =>
