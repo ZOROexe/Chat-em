@@ -6,7 +6,9 @@ const app = express();
 
 const server = http.createServer(app);
 const URL =
-  process.env.NODE_ENV === "development" ? "http://localhost:5173" : "/";
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:5173"
+    : "https://chat-em.onrender.com";
 const io = new Server(server, {
   cors: {
     origin: [URL],
