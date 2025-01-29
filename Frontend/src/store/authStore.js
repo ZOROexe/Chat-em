@@ -86,6 +86,8 @@ export const useAuth = create((set, get) => ({
       query: {
         userId: authUser.user._id,
       },
+      transports: ["websocket"],
+      withCredentials: true,
     });
 
     set({ socket: socket });
