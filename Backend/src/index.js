@@ -25,10 +25,6 @@ const __dirname = path.resolve();
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-app.get("/", (req, res) => {
-  res.send("backend running");
-});
-
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../Frontend/dist")));
 
