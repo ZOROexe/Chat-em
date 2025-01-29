@@ -61,8 +61,8 @@ export const useMsgStore = create((set, get) => ({
       toast.error(error.response.data.message);
     }
   },
-  connectToMessages: (state) => {
-    const selectedUser = state.selectedUser;
+  connectToMessages: () => {
+    const { selectedUser } = get();
     if (!selectedUser) return;
     const socket = useAuth.getState().socket;
     const currUser = useAuth.getState().authUser;
