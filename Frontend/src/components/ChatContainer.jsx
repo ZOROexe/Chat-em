@@ -7,6 +7,7 @@ import { useAuth } from "../store/authStore.js";
 import correctDate from "../lib/utils.js";
 export const ChatContainer = () => {
   const {
+    getUsers,
     messages,
     getMessages,
     selectedUser,
@@ -19,6 +20,7 @@ export const ChatContainer = () => {
   const messageRef = useRef(null);
 
   useEffect(() => {
+    getUsers();
     getMessages(selectedUser._id);
     markMessageAsRead(selectedUser._id);
     connectToMessages();
@@ -30,6 +32,7 @@ export const ChatContainer = () => {
     connectToMessages,
     disconnectFromMessages,
     markMessageAsRead,
+    getUsers,
   ]);
 
   useEffect(() => {

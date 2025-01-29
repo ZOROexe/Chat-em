@@ -62,13 +62,14 @@ export const useMsgStore = create((set, get) => ({
     }
   },
   connectToMessages: () => {
-    const { selectedUser } = get();
+    const selectedUser = state.selectedUser;
     if (!selectedUser) return;
     const socket = useAuth.getState().socket;
     const currUser = useAuth.getState().authUser;
 
     socket.on("newMessage", (newMessage) => {
       set((state) => {
+        if (!state.user) return {};
         if (
           (newMessage.senderId === selectedUser._id &&
             newMessage.receiverId === currUser._id) ||
@@ -77,7 +78,7 @@ export const useMsgStore = create((set, get) => ({
         ) {
           return set({ messages: [...state.messages, newMessage] });
         }
-      })
+      });
 
       set((state) => ({
         users: state.users.map((user) =>
