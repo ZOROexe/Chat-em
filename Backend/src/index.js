@@ -26,7 +26,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
 app.get("/", (req, res) => {
-  console.log("backend running");
+  res.send("backend running");
 });
 
 if (process.env.NODE_ENV === "production") {
