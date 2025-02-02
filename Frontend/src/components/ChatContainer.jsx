@@ -27,7 +27,6 @@ export const ChatContainer = () => {
 
     return () => disconnectFromMessages();
   }, [
-    messages,
     selectedUser,
     getMessages,
     connectToMessages,
