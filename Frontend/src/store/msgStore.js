@@ -61,7 +61,47 @@ export const useMsgStore = create((set, get) => ({
       toast.error(error.response.data.message);
     }
   },
+
   connectToMessages: () => {
+    const { selectedUser } = get();
+    if (!selectedUser) return;
+
+    const socket = useAuth.getState().socket;
+    const currUser = useAuth.getState().authUser;
+
+    socket.on("newMessage", (newMessage) => {
+      console.log("📩 New message received:", newMessage);
+
+      set((state) => {
+        // Ensure messages update when chat is open
+        if (
+          newMessage.senderId === selectedUser?._id ||
+          newMessage.receiverId === selectedUser?._id
+        ) {
+          return { messages: [...state.messages, newMessage] };
+        }
+
+        // Update unread messages for other chats
+        return {
+          users: state.users.map((user) =>
+            user._id === newMessage.senderId
+              ? { ...user, hasUnreadMessages: true }
+              : user
+          ),
+        };
+      });
+    });
+
+    socket.on("messagesRead", ({ userId }) => {
+      set((state) => ({
+        users: state.users.map((user) =>
+          user._id === userId ? { ...user, hasUnreadMessages: false } : user
+        ),
+      }));
+    });
+  },
+
+  /* connectToMessages: () => {
     const { selectedUser } = get();
     if (!selectedUser) return;
     const socket = useAuth.getState().socket;
@@ -96,7 +136,7 @@ export const useMsgStore = create((set, get) => ({
         ),
       }));
     });
-  },
+  }, */
 
   disconnectFromMessages: () => {
     const socket = useAuth.getState().socket;

@@ -20,6 +20,17 @@ export const ChatContainer = () => {
   const messageRef = useRef(null);
 
   useEffect(() => {
+    if (!selectedUser) return; // Prevent running if no user is selected
+
+    getUsers();
+    getMessages(selectedUser._id);
+    markMessageAsRead(selectedUser._id);
+    connectToMessages();
+
+    return () => disconnectFromMessages();
+  }, [selectedUser]); // Only run when selectedUser changes
+
+  /* useEffect(() => {
     getUsers();
     getMessages(selectedUser._id);
     markMessageAsRead(selectedUser._id);
@@ -33,13 +44,21 @@ export const ChatContainer = () => {
     disconnectFromMessages,
     markMessageAsRead,
     getUsers,
-  ]);
+  ]); */
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (messageRef.current) {
       messageRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, selectedUser]);
+  }, [messages, selectedUser]); */
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (messageRef.current) {
+        messageRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100); // Delay to ensure new message is rendered
+  }, [messages]);
 
   if (isGettingMessages) return <MsgLoading />;
 
