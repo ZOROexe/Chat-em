@@ -73,7 +73,6 @@ export const useMsgStore = create((set, get) => ({
       console.log("📩 New message received:", newMessage);
 
       set((state) => {
-        // Ensure messages update when chat is open
         if (
           newMessage.senderId === selectedUser?._id ||
           newMessage.receiverId === selectedUser?._id
@@ -81,7 +80,6 @@ export const useMsgStore = create((set, get) => ({
           return { messages: [...state.messages, newMessage] };
         }
 
-        // Update unread messages for other chats
         return {
           users: state.users.map((user) =>
             user._id === newMessage.senderId
@@ -100,43 +98,6 @@ export const useMsgStore = create((set, get) => ({
       }));
     });
   },
-
-  /* connectToMessages: () => {
-    const { selectedUser } = get();
-    if (!selectedUser) return;
-    const socket = useAuth.getState().socket;
-    const currUser = useAuth.getState().authUser;
-
-    socket.on("newMessage", (newMessage) => {
-      set((state) => {
-        if (!state.user) return {};
-        if (
-          (newMessage.senderId === selectedUser._id &&
-            newMessage.receiverId === currUser._id) ||
-          (newMessage.senderId === currUser._id &&
-            newMessage.receiverId === senderId)
-        ) {
-          return set({ messages: [...state.messages, newMessage] });
-        }
-      });
-
-      set((state) => ({
-        users: state.users.map((user) =>
-          user._id === newMessage.senderId
-            ? { ...user, hasUnreadMessages: true }
-            : user
-        ),
-      }));
-    });
-
-    socket.on("messagesRead", ({ userId }) => {
-      set((state) => ({
-        users: state.users.map((user) =>
-          user._id === userId ? { ...user, hasUnreadMessages: false } : user
-        ),
-      }));
-    });
-  }, */
 
   disconnectFromMessages: () => {
     const socket = useAuth.getState().socket;
