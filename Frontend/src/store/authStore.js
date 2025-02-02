@@ -85,6 +85,8 @@ export const useAuth = create((set, get) => ({
     const socket = io(URL, {
       query: {
         userId: authUser.user._id,
+        transports: ["websocket"],
+        withCredentials: true,
       },
     });
 
